@@ -61,11 +61,28 @@ export default function App() {
   const throwDart = (player) => {
     const value = player[question.key];
     if (value > 180) {
-      setFeedback({ type: 'no-score', name: player.name, value });
-      setTimeout(() => { setFeedback(null); setQuery(''); }, 1800);
-      return;
-    }
+  // Show feedback
+  setFeedback({ type: 'no-score', name: player.name, value });
 
+  // Add SAME SCORE again to history (0 points scored)
+  const updated = [...scores];
+  const sameScore = updated[currentPlayer].score;
+  updated[currentPlayer].history.push(sameScore);
+  setScores(updated);
+
+  // Mark player as used
+  setUsedIds(prev => [...prev, String(player.id)]);
+
+  setQuery('');
+
+  // Move to next player AFTER showing message
+  setTimeout(() => {
+    setFeedback(null);
+    setCurrentPlayer((currentPlayer + 1) % numPlayers);
+  }, 1800);
+
+  return;
+}
     const newScore = scores[currentPlayer].score - value;
     let type = 'score';
 
