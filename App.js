@@ -61,28 +61,29 @@ export default function App() {
   const throwDart = (player) => {
     const value = player[question.key];
     if (value > 180) {
-  // Show feedback
-  setFeedback({ type: 'no-score', name: player.name, value });
+      // Show feedback
+      setFeedback({ type: 'no-score', name: player.name, value });
 
-  // Add SAME SCORE again to history (0 points scored)
-  const updated = [...scores];
-  const sameScore = updated[currentPlayer].score;
-  updated[currentPlayer].history.push(sameScore);
-  setScores(updated);
+      // Add SAME SCORE again to history (0 points scored)
+      const updated = [...scores];
+      const sameScore = updated[currentPlayer].score;
+      updated[currentPlayer].history.push(sameScore);
+      setScores(updated);
 
-  // Mark player as used
-  setUsedIds(prev => [...prev, String(player.id)]);
+      // Mark player as used
+      setUsedIds(prev => [...prev, String(player.id)]);
 
-  setQuery('');
+      setQuery('');
 
-  // Move to next player AFTER showing message
-  setTimeout(() => {
-    setFeedback(null);
-    setCurrentPlayer((currentPlayer + 1) % numPlayers);
-  }, 1800);
+      // Move to next player AFTER showing message
+      setTimeout(() => {
+        setFeedback(null);
+        setCurrentPlayer((currentPlayer + 1) % numPlayers);
+      }, 1800);
 
-  return;
-}
+      return;
+    }
+
     const newScore = scores[currentPlayer].score - value;
     let type = 'score';
 
@@ -96,7 +97,12 @@ export default function App() {
       type = 'bust';
     }
 
-    setFeedback({ type, name: player.name, value });
+    // Updated feedback for bust to only show stat
+    if (type === 'bust') {
+      setFeedback({ type, name: player.name, value });
+    } else {
+      setFeedback({ type, name: player.name, value });
+    }
 
     if (type !== 'bust') {
       const updated = [...scores];
@@ -255,7 +261,14 @@ export default function App() {
         {feedback && (
           <View style={{ padding:20, alignItems:'center' }}>
             {feedback.type === 'score' && <Text style={{color:'#0f0',fontSize:50,fontWeight:'900'}}>{feedback.name} −{feedback.value}</Text>}
-            {feedback.type === 'bust' && <Text style={{color:'#ff0',fontSize:56,fontWeight:'900'}}>{feedback.name} → BUST!</Text>}
+            
+            {feedback.type === 'bust' && (
+              <Text style={{color:'#ff0', fontSize:50, fontWeight:'900', textAlign:'center'}}>
+                {feedback.name} → BUST
+                {"\n"}Stat: {feedback.value}
+              </Text>
+            )}
+            
             {feedback.type === 'win' && <Text style={{color:'#0f0',fontSize:60,fontWeight:'900',textShadowColor:'#0f0',textShadowRadius:20}}>{feedback.name} WINS!</Text>}
             {feedback.type === 'no-score' && <Text style={{color:'#f55',fontSize:42,fontWeight:'900'}}>{feedback.name} → No score ({feedback.value})</Text>}
             {feedback.type === 'buffer-win' && (
